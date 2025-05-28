@@ -1,3 +1,4 @@
+
 import { Canvas as FabricCanvas, FabricImage, Rect } from 'fabric';
 
 export interface LocationZone {
@@ -99,7 +100,7 @@ export const applyFilterToImage = (file: File, zone: LocationZone): Promise<stri
         const imageUrl = URL.createObjectURL(file);
         
         FabricImage.fromURL(imageUrl).then((fabricImg) => {
-          // Scale image to fit canvas
+          // Scale image to fit canvas - using Fabric.js v6 API
           fabricImg.scaleToWidth(canvas.width!);
           fabricImg.scaleToHeight(canvas.height!);
           fabricImg.set({
