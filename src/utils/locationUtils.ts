@@ -1,4 +1,3 @@
-
 import { Canvas as FabricCanvas, FabricImage, Rect } from 'fabric';
 
 export interface LocationZone {
@@ -45,6 +44,17 @@ export const PREDEFINED_ZONES: LocationZone[] = [
     filter: {
       type: "overlay",
       color: "rgba(59, 130, 246, 0.3)",
+      intensity: 0.3
+    }
+  },
+  {
+    name: "Paris, France",
+    type: "radius",
+    center: { lat: 48.8566, lng: 2.3522 },
+    radius: 10,
+    filter: {
+      type: "overlay",
+      color: "rgba(168, 85, 247, 0.3)",
       intensity: 0.3
     }
   }
