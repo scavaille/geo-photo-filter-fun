@@ -97,7 +97,11 @@ export const applyFilterToImage = (file: File, zone: LocationZone): Promise<stri
           height: img.height
         });
 
-        FabricImage.fromURL(URL.createObjectURL(file)).then((fabricImg) => {
+        const imageUrl = URL.createObjectURL(file);
+        
+        FabricImage.fromURL(imageUrl, {
+          crossOrigin: 'anonymous'
+        }).then((fabricImg) => {
           // Scale image to fit canvas
           fabricImg.scaleToWidth(canvas.width!);
           fabricImg.scaleToHeight(canvas.height!);
@@ -127,6 +131,7 @@ export const applyFilterToImage = (file: File, zone: LocationZone): Promise<stri
           // Convert to data URL
           const dataURL = canvas.toDataURL('image/jpeg', 0.9);
           canvas.dispose();
+          URL.revokeObjectURL(imageUrl);
           resolve(dataURL);
         }).catch(reject);
       } catch (error) {
