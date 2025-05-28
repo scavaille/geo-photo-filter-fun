@@ -1,10 +1,10 @@
 
 import React, { useCallback, useRef } from 'react';
-import { Upload, Image, Camera } from 'lucide-react';
+import { Upload, Image, Camera, MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { extractGPSFromImage } from '@/utils/exifUtils';
+import { getCurrentLocation } from '@/utils/geolocationUtils';
 
 interface PhotoData {
   file: File;
@@ -35,21 +35,21 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
     }
 
     setIsProcessing(true);
-    toast.info('Extracting location data from photo...');
+    toast.info('Getting your current location...');
 
     try {
-      const coordinates = await extractGPSFromImage(file);
+      const coordinates = await getCurrentLocation();
       
       if (coordinates) {
         toast.success(`Location found: ${coordinates.lat.toFixed(4)}, ${coordinates.lng.toFixed(4)}`);
         onPhotoUpload({ file, coordinates });
       } else {
-        toast.warning('No GPS data found in this photo');
+        toast.warning('Could not get your location - photo will be displayed without filter');
         onPhotoUpload({ file });
       }
     } catch (error) {
       console.error('Error processing photo:', error);
-      toast.error('Error processing photo');
+      toast.error('Error getting location');
       onPhotoUpload({ file });
     } finally {
       setIsProcessing(false);
@@ -105,13 +105,13 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
         </div>
         
         <h3 className="text-xl font-semibold mb-2 text-gray-800">
-          {isProcessing ? 'Processing Photo...' : 'Take or Upload Photo'}
+          {isProcessing ? 'Getting Location...' : 'Take or Upload Photo'}
         </h3>
         
         <p className="text-gray-600 mb-6">
           {isProcessing 
-            ? 'Extracting GPS coordinates from EXIF data...'
-            : 'Use your camera or select from gallery'
+            ? 'Using device GPS to determine your current location...'
+            : 'We\'ll use your device location to apply location-based filters'
           }
         </p>
 
@@ -157,7 +157,12 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
           </Button>
         </div>
 
-        <p className="text-xs text-gray-500 mt-4">
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-500 mt-4">
+          <MapPin className="w-3 h-3" />
+          <span>Location permission required for filters</span>
+        </div>
+        
+        <p className="text-xs text-gray-500 mt-2">
           Or drag and drop an image here
         </p>
       </div>
