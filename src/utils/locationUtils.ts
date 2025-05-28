@@ -101,11 +101,14 @@ export const applyFilterToImage = (file: File, zone: LocationZone): Promise<stri
         
         FabricImage.fromURL(imageUrl).then((fabricImg) => {
           // Scale image to fit canvas - using Fabric.js v6 API
-          fabricImg.scaleToWidth(canvas.width!);
-          fabricImg.scaleToHeight(canvas.height!);
+          const scaleX = canvas.width! / fabricImg.width!;
+          const scaleY = canvas.height! / fabricImg.height!;
+          
           fabricImg.set({
             left: 0,
             top: 0,
+            scaleX: scaleX,
+            scaleY: scaleY,
             selectable: false
           });
 
