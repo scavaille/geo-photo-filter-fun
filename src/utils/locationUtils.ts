@@ -1,5 +1,5 @@
 
-import { Canvas as FabricCanvas, FabricImage } from 'fabric';
+import { Canvas as FabricCanvas, FabricImage, Rect } from 'fabric';
 
 export interface LocationZone {
   name: string;
@@ -111,7 +111,7 @@ export const applyFilterToImage = (file: File, zone: LocationZone): Promise<stri
 
           // Apply filter based on zone configuration
           if (zone.filter.type === 'overlay' && zone.filter.color) {
-            const overlay = new fabric.Rect({
+            const overlay = new Rect({
               left: 0,
               top: 0,
               width: canvas.width,

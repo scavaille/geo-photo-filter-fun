@@ -1,6 +1,6 @@
 
-import React, { useCallback } from 'react';
-import { Upload, Image } from 'lucide-react';
+import React, { useCallback, useRef } from 'react';
+import { Upload, Image, Camera } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -25,6 +25,9 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
   isProcessing, 
   setIsProcessing 
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
   const handleFileSelect = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Please select a valid image file');
@@ -61,12 +64,27 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
     }
   }, [handleFileSelect]);
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       handleFileSelect(files[0]);
     }
   }, [handleFileSelect]);
+
+  const handleCameraInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileSelect(files[0]);
+    }
+  }, [handleFileSelect]);
+
+  const openGallery = () => {
+    fileInputRef.current?.click();
+  };
+
+  const openCamera = () => {
+    cameraInputRef.current?.click();
+  };
 
   return (
     <Card 
@@ -87,35 +105,61 @@ export const PhotoUpload: React.FC<PhotoUploadProps> = ({
         </div>
         
         <h3 className="text-xl font-semibold mb-2 text-gray-800">
-          {isProcessing ? 'Processing Photo...' : 'Upload Your Photo'}
+          {isProcessing ? 'Processing Photo...' : 'Take or Upload Photo'}
         </h3>
         
         <p className="text-gray-600 mb-6">
           {isProcessing 
             ? 'Extracting GPS coordinates from EXIF data...'
-            : 'Drag and drop your photo here or click to browse'
+            : 'Use your camera or select from gallery'
           }
         </p>
 
+        {/* Hidden file inputs */}
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/*"
-          onChange={handleFileInput}
+          onChange={handleGalleryInput}
           className="hidden"
-          id="photo-upload"
           disabled={isProcessing}
         />
         
-        <Button 
-          asChild 
-          className="bg-indigo-600 hover:bg-indigo-700"
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleCameraInput}
+          className="hidden"
           disabled={isProcessing}
-        >
-          <label htmlFor="photo-upload" className="cursor-pointer">
+        />
+
+        {/* Action buttons */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button 
+            onClick={openCamera}
+            className="bg-indigo-600 hover:bg-indigo-700"
+            disabled={isProcessing}
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Take Photo
+          </Button>
+          
+          <Button 
+            onClick={openGallery}
+            variant="outline"
+            className="border-indigo-300 hover:bg-indigo-50"
+            disabled={isProcessing}
+          >
             <Image className="w-4 h-4 mr-2" />
-            Choose Photo
-          </label>
-        </Button>
+            Choose from Gallery
+          </Button>
+        </div>
+
+        <p className="text-xs text-gray-500 mt-4">
+          Or drag and drop an image here
+        </p>
       </div>
     </Card>
   );
