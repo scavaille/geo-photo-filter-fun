@@ -3,6 +3,7 @@ import React from 'react';
 import { Download, MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { saveToGallery } from '@/utils/cameraUtils';
 
 interface PhotoData {
   file: File;
@@ -25,6 +26,13 @@ export const FilteredPhotoDisplay: React.FC<FilteredPhotoDisplayProps> = ({
   onDownload, 
   onReset 
 }) => {
+  const handleSaveToGallery = async () => {
+    if (!photoData.filteredImageUrl) return;
+    
+    const filename = `filtered_${photoData.file.name.replace(/\.[^/.]+$/, '')}_${Date.now()}.jpg`;
+    await saveToGallery(photoData.filteredImageUrl, filename);
+  };
+
   return (
     <Card className="p-6 bg-white/50 backdrop-blur-sm border-0 shadow-lg">
       <div className="text-center mb-6">
@@ -59,11 +67,11 @@ export const FilteredPhotoDisplay: React.FC<FilteredPhotoDisplayProps> = ({
 
       <div className="flex gap-4 justify-center">
         <Button 
-          onClick={onDownload}
+          onClick={handleSaveToGallery}
           className="bg-green-600 hover:bg-green-700"
         >
           <Download className="w-4 h-4 mr-2" />
-          Download Photo
+          Save to Gallery
         </Button>
         
         <Button 
